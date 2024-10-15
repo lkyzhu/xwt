@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package custom;
+
+option go_package = "./custom";
+
+message StandardClaims {
+    string Issuer = 1;
+    string Subject = 2;
+    repeated string Audience = 3;
+    int64 ExpiresAt = 4;
+    int64 NotBefore = 5;
+    int64 IssuedAt = 6;
+    string ID = 7;
+}
+
+message CustomClaims {
+    StandardClaims claims = 1;
+    string Name = 2;
+    int64 Age = 3;
+}
+
+
+
+
