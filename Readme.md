@@ -32,12 +32,12 @@ PWT（Protobuf Web Token）采用Protocol Buffers（一种高效的数据序列�
 Claims在XWT中是一个interface，是XWT序列化和反序列化Payload基本单元；
 ```
 type Claims interface {
-    GetExpirationTime() (*internal.NumericDate, error)
-    GetIssuedAt() (*internal.NumericDate, error)
-    GetNotBefore() (*internal.NumericDate, error)
-    GetIssuer() (string, error)
-    GetSubject() (string, error)
-    GetAudience() (internal.ClaimStrings, error)
+    GetExpirationTime() int64
+    GetIssuedAt() int64
+    GetNotBefore() int64
+    GetIssuer() string
+    GetSubject() string
+    GetAudience() []string
     Type() string
     Marshal() ([]byte, error)
     Unmarshal([]byte) error

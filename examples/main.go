@@ -11,7 +11,6 @@ import (
 
 	"github.com/lkyzhu/xwt"
 	"github.com/lkyzhu/xwt/examples/custom"
-	"github.com/lkyzhu/xwt/internal"
 	"github.com/lkyzhu/xwt/jwt"
 	"github.com/lkyzhu/xwt/method"
 	"github.com/spf13/cobra"
@@ -76,27 +75,25 @@ func encRun(cmd *cobra.Command, args []string) {
 				Issuer:    "lkyzhu",
 				Subject:   sType,
 				Audience:  []string{"a1", "a2"},
-				ExpiresAt: internal.NewNumericDate(time.Now().AddDate(1, 0, 0)),
-				IssuedAt:  internal.NewNumericDate(time.Now()),
-				NotBefore: internal.NewNumericDate(time.Now()),
+				ExpiresAt: time.Now().AddDate(1, 0, 0).Unix(),
+				IssuedAt:  time.Now().Unix(),
+				NotBefore: time.Now().Unix(),
 			},
 			Name: "Custom-JWT",
 			Age:  21,
 		}
 	default:
-		claims = &custom.PwtCustomClaims{
-			CustomClaims: custom.CustomClaims{
-				Claims: &custom.StandardClaims{
-					Issuer:    "lkyzhu",
-					Subject:   "pwt",
-					Audience:  []string{"a1", "a2"},
-					ExpiresAt: time.Now().AddDate(1, 0, 0).Unix(),
-					IssuedAt:  time.Now().Unix(),
-					NotBefore: time.Now().Unix(),
-				},
-				Name: "Custom-PWT",
-				Age:  21,
+		claims = &custom.CustomClaims{
+			Claims: &custom.StandardClaims{
+				Issuer:    "lkyzhu",
+				Subject:   "pwt",
+				Audience:  []string{"a1", "a2"},
+				ExpiresAt: time.Now().AddDate(1, 0, 0).Unix(),
+				IssuedAt:  time.Now().Unix(),
+				NotBefore: time.Now().Unix(),
 			},
+			Name: "Custom-PWT",
+			Age:  21,
 		}
 	}
 
@@ -140,7 +137,7 @@ func decRun(cmd *cobra.Command, args []string) {
 	case "jwt":
 		claims = &custom.JwtCustomClaims{}
 	default:
-		claims = &custom.PwtCustomClaims{}
+		claims = &custom.CustomClaims{}
 	}
 
 	xData, _ := cmd.Flags().GetString("xwt")

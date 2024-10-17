@@ -89,16 +89,16 @@ func NewValidator(opts ...ParserOption) *Validator {
 // verified.
 func (v *Validator) Validate(claims Claims) error {
 	var (
-		now  time.Time
+		now  int64
 		errs []error = make([]error, 0, 6)
 		err  error
 	)
 
 	// Check, if we have a time func
 	if v.timeFunc != nil {
-		now = v.timeFunc()
+		now = v.timeFunc().Unix()
 	} else {
-		now = time.Now()
+		now = time.Now().Unix()
 	}
 
 	// We always need to check the expiration time, but usage of the claim
@@ -166,17 +166,13 @@ func (v *Validator) Validate(claims Claims) error {
 //
 // Additionally, if any error occurs while retrieving the claim, e.g., when its
 // the wrong type, an ErrTokenUnverifiable error will be returned.
-func (v *Validator) verifyExpiresAt(claims Claims, cmp time.Time, required bool) error {
-	exp, err := claims.GetExpirationTime()
-	if err != nil {
-		return err
-	}
+func (v *Validator) verifyExpiresAt(claims Claims, cur int64, required bool) error {
+	if required {
+		exp := claims.GetExpirationTime()
 
-	if exp == nil {
-		return errorIfRequired(required, "exp")
+		return errorIfFalse(cur < exp+int64(v.leeway/time.Second), internal.ErrTokenExpired)
 	}
-
-	return errorIfFalse(cmp.Before((exp.Time).Add(+v.leeway)), internal.ErrTokenExpired)
+	return nil
 }
 
 // verifyIssuedAt compares the iat claim in claims against cmp. This function
@@ -187,17 +183,13 @@ func (v *Validator) verifyExpiresAt(claims Claims, cmp time.Time, required bool)
 //
 // Additionally, if any error occurs while retrieving the claim, e.g., when its
 // the wrong type, an ErrTokenUnverifiable error will be returned.
-func (v *Validator) verifyIssuedAt(claims Claims, cmp time.Time, required bool) error {
-	iat, err := claims.GetIssuedAt()
-	if err != nil {
-		return err
-	}
+func (v *Validator) verifyIssuedAt(claims Claims, cur int64, required bool) error {
+	if required {
+		iat := claims.GetIssuedAt()
 
-	if iat == nil {
-		return errorIfRequired(required, "iat")
+		return errorIfFalse(cur >= iat-int64(v.leeway/time.Second), internal.ErrTokenUsedBeforeIssued)
 	}
-
-	return errorIfFalse(!cmp.Before(iat.Add(-v.leeway)), internal.ErrTokenUsedBeforeIssued)
+	return nil
 }
 
 // verifyNotBefore compares the nbf claim in claims against cmp. This function
@@ -208,17 +200,13 @@ func (v *Validator) verifyIssuedAt(claims Claims, cmp time.Time, required bool) 
 //
 // Additionally, if any error occurs while retrieving the claim, e.g., when its
 // the wrong type, an ErrTokenUnverifiable error will be returned.
-func (v *Validator) verifyNotBefore(claims Claims, cmp time.Time, required bool) error {
-	nbf, err := claims.GetNotBefore()
-	if err != nil {
-		return err
-	}
+func (v *Validator) verifyNotBefore(claims Claims, cur int64, required bool) error {
+	if required {
+		nbf := claims.GetNotBefore()
 
-	if nbf == nil {
-		return errorIfRequired(required, "nbf")
+		return errorIfFalse(cur >= nbf-int64(v.leeway/time.Second), internal.ErrTokenNotValidYet)
 	}
-
-	return errorIfFalse(!cmp.Before(nbf.Add(-v.leeway)), internal.ErrTokenNotValidYet)
+	return nil
 }
 
 // verifyAudience compares the aud claim against cmp.
@@ -229,14 +217,7 @@ func (v *Validator) verifyNotBefore(claims Claims, cmp time.Time, required bool)
 // Additionally, if any error occurs while retrieving the claim, e.g., when its
 // the wrong type, an ErrTokenUnverifiable error will be returned.
 func (v *Validator) verifyAudience(claims Claims, cmp string, required bool) error {
-	aud, err := claims.GetAudience()
-	if err != nil {
-		return err
-	}
-
-	if len(aud) == 0 {
-		return errorIfRequired(required, "aud")
-	}
+	aud := claims.GetAudience()
 
 	// use a var here to keep constant time compare when looping over a number of claims
 	result := false
@@ -265,11 +246,7 @@ func (v *Validator) verifyAudience(claims Claims, cmp string, required bool) err
 // Additionally, if any error occurs while retrieving the claim, e.g., when its
 // the wrong type, an ErrTokenUnverifiable error will be returned.
 func (v *Validator) verifyIssuer(claims Claims, cmp string, required bool) error {
-	iss, err := claims.GetIssuer()
-	if err != nil {
-		return err
-	}
-
+	iss := claims.GetIssuer()
 	if iss == "" {
 		return errorIfRequired(required, "iss")
 	}
@@ -285,10 +262,7 @@ func (v *Validator) verifyIssuer(claims Claims, cmp string, required bool) error
 // Additionally, if any error occurs while retrieving the claim, e.g., when its
 // the wrong type, an ErrTokenUnverifiable error will be returned.
 func (v *Validator) verifySubject(claims Claims, cmp string, required bool) error {
-	sub, err := claims.GetSubject()
-	if err != nil {
-		return err
-	}
+	sub := claims.GetSubject()
 
 	if sub == "" {
 		return errorIfRequired(required, "sub")

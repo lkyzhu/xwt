@@ -2,8 +2,6 @@ package jwt
 
 import (
 	"encoding/json"
-
-	"github.com/lkyzhu/xwt/internal"
 )
 
 // RegisteredClaims are a structured version of the JWT Claims Set,
@@ -23,49 +21,49 @@ type RegisteredClaims struct {
 	Subject string `json:"sub,omitempty"`
 
 	// the `aud` (Audience) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3
-	Audience internal.ClaimStrings `json:"aud,omitempty"`
+	Audience []string `json:"aud,omitempty"`
 
 	// the `exp` (Expiration Time) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.4
-	ExpiresAt *internal.NumericDate `json:"exp,omitempty"`
+	ExpiresAt int64 `json:"exp,omitempty"`
 
 	// the `nbf` (Not Before) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.5
-	NotBefore *internal.NumericDate `json:"nbf,omitempty"`
+	NotBefore int64 `json:"nbf,omitempty"`
 
 	// the `iat` (Issued At) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.6
-	IssuedAt *internal.NumericDate `json:"iat,omitempty"`
+	IssuedAt int64 `json:"iat,omitempty"`
 
 	// the `jti` (JWT ID) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7
 	ID string `json:"jti,omitempty"`
 }
 
 // GetExpirationTime implements the Claims interface.
-func (c *RegisteredClaims) GetExpirationTime() (*internal.NumericDate, error) {
-	return c.ExpiresAt, nil
+func (c *RegisteredClaims) GetExpirationTime() int64 {
+	return c.ExpiresAt
 }
 
 // GetNotBefore implements the Claims interface.
-func (c *RegisteredClaims) GetNotBefore() (*internal.NumericDate, error) {
-	return c.NotBefore, nil
+func (c *RegisteredClaims) GetNotBefore() int64 {
+	return c.NotBefore
 }
 
 // GetIssuedAt implements the Claims interface.
-func (c *RegisteredClaims) GetIssuedAt() (*internal.NumericDate, error) {
-	return c.IssuedAt, nil
+func (c *RegisteredClaims) GetIssuedAt() int64 {
+	return c.IssuedAt
 }
 
 // GetAudience implements the Claims interface.
-func (c *RegisteredClaims) GetAudience() (internal.ClaimStrings, error) {
-	return c.Audience, nil
+func (c *RegisteredClaims) GetAudience() []string {
+	return c.Audience
 }
 
 // GetIssuer implements the Claims interface.
-func (c *RegisteredClaims) GetIssuer() (string, error) {
-	return c.Issuer, nil
+func (c *RegisteredClaims) GetIssuer() string {
+	return c.Issuer
 }
 
 // GetSubject implements the Claims interface.
-func (c *RegisteredClaims) GetSubject() (string, error) {
-	return c.Subject, nil
+func (c *RegisteredClaims) GetSubject() string {
+	return c.Subject
 }
 
 // Type implements the Claims interface.

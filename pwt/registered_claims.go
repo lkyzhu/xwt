@@ -1,7 +1,6 @@
 package pwt
 
 import (
-	"github.com/lkyzhu/xwt/internal"
 	"github.com/lkyzhu/xwt/pwt/pb"
 	"google.golang.org/protobuf/proto"
 )
@@ -20,33 +19,33 @@ type RegisteredClaims struct {
 }
 
 // GetExpirationTime implements the Claims interface.
-func (c *RegisteredClaims) GetExpirationTime() (*internal.NumericDate, error) {
-	return internal.NewNumericDateFromSeconds(float64(c.ExpiresAt)), nil
+func (c *RegisteredClaims) GetExpirationTime() int64 {
+	return c.ExpiresAt
 }
 
 // GetNotBefore implements the Claims interface.
-func (c *RegisteredClaims) GetNotBefore() (*internal.NumericDate, error) {
-	return internal.NewNumericDateFromSeconds(float64(c.NotBefore)), nil
+func (c *RegisteredClaims) GetNotBefore() int64 {
+	return c.NotBefore
 }
 
 // GetIssuedAt implements the Claims interface.
-func (c *RegisteredClaims) GetIssuedAt() (*internal.NumericDate, error) {
-	return internal.NewNumericDateFromSeconds(float64(c.IssuedAt)), nil
+func (c *RegisteredClaims) GetIssuedAt() int64 {
+	return c.IssuedAt
 }
 
 // GetAudience implements the Claims interface.
-func (c *RegisteredClaims) GetAudience() (internal.ClaimStrings, error) {
-	return c.Audience, nil
+func (c *RegisteredClaims) GetAudience() []string {
+	return c.Audience
 }
 
 // GetIssuer implements the Claims interface.
-func (c *RegisteredClaims) GetIssuer() (string, error) {
-	return c.Issuer, nil
+func (c *RegisteredClaims) GetIssuer() string {
+	return c.Issuer
 }
 
 // GetSubject implements the Claims interface.
-func (c *RegisteredClaims) GetSubject() (string, error) {
-	return c.Subject, nil
+func (c *RegisteredClaims) GetSubject() string {
+	return c.Subject
 }
 
 // Type implements the Claims interface.

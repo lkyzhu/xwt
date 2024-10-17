@@ -3,7 +3,6 @@ package custom
 import (
 	"encoding/json"
 
-	"github.com/lkyzhu/xwt/internal"
 	"github.com/lkyzhu/xwt/jwt"
 	"google.golang.org/protobuf/proto"
 )
@@ -17,52 +16,49 @@ import (
 // therefore is to embedded this in a user-defined claim type.
 //
 // See examples for how to use this with your own claim types.
-type PwtCustomClaims struct {
-	CustomClaims
-}
 
 // GetExpirationTime implements the Claims interface.
-func (c *PwtCustomClaims) GetExpirationTime() (*internal.NumericDate, error) {
-	return internal.NewNumericDateFromSeconds(float64(c.Claims.ExpiresAt)), nil
+func (c *CustomClaims) GetExpirationTime() int64 {
+	return c.Claims.ExpiresAt
 }
 
 // GetNotBefore implements the Claims interface.
-func (c *PwtCustomClaims) GetNotBefore() (*internal.NumericDate, error) {
-	return internal.NewNumericDateFromSeconds(float64(c.Claims.NotBefore)), nil
+func (c *CustomClaims) GetNotBefore() int64 {
+	return c.Claims.NotBefore
 }
 
 // GetIssuedAt implements the Claims interface.
-func (c *PwtCustomClaims) GetIssuedAt() (*internal.NumericDate, error) {
-	return internal.NewNumericDateFromSeconds(float64(c.Claims.IssuedAt)), nil
+func (c *CustomClaims) GetIssuedAt() int64 {
+	return c.Claims.IssuedAt
 }
 
 // GetAudience implements the Claims interface.
-func (c *PwtCustomClaims) GetAudience() (internal.ClaimStrings, error) {
-	return c.Claims.Audience, nil
+func (c *CustomClaims) GetAudience() []string {
+	return c.Claims.Audience
 }
 
 // GetIssuer implements the Claims interface.
-func (c *PwtCustomClaims) GetIssuer() (string, error) {
-	return c.Claims.Issuer, nil
+func (c *CustomClaims) GetIssuer() string {
+	return c.Claims.Issuer
 }
 
 // GetSubject implements the Claims interface.
-func (c *PwtCustomClaims) GetSubject() (string, error) {
-	return c.Claims.Subject, nil
+func (c *CustomClaims) GetSubject() string {
+	return c.Claims.Subject
 }
 
 // Type implements the Claims interface.
-func (c *PwtCustomClaims) Type() string {
+func (c *CustomClaims) Type() string {
 	return "PWT"
 }
 
 // Marshal implements the Claims interface.
-func (c *PwtCustomClaims) Marshal() ([]byte, error) {
+func (c *CustomClaims) Marshal() ([]byte, error) {
 	return proto.Marshal(c)
 }
 
 // Unmarshal implements the Claims interface.
-func (c *PwtCustomClaims) Unmarshal(data []byte) error {
+func (c *CustomClaims) Unmarshal(data []byte) error {
 	return proto.Unmarshal(data, c)
 }
 
@@ -73,33 +69,33 @@ type JwtCustomClaims struct {
 }
 
 // GetExpirationTime implements the Claims interface.
-func (c *JwtCustomClaims) GetExpirationTime() (*internal.NumericDate, error) {
-	return c.ExpiresAt, nil
+func (c *JwtCustomClaims) GetExpirationTime() int64 {
+	return c.ExpiresAt
 }
 
 // GetNotBefore implements the Claims interface.
-func (c *JwtCustomClaims) GetNotBefore() (*internal.NumericDate, error) {
-	return c.NotBefore, nil
+func (c *JwtCustomClaims) GetNotBefore() int64 {
+	return c.NotBefore
 }
 
 // GetIssuedAt implements the Claims interface.
-func (c *JwtCustomClaims) GetIssuedAt() (*internal.NumericDate, error) {
-	return c.IssuedAt, nil
+func (c *JwtCustomClaims) GetIssuedAt() int64 {
+	return c.IssuedAt
 }
 
 // GetAudience implements the Claims interface.
-func (c *JwtCustomClaims) GetAudience() (internal.ClaimStrings, error) {
-	return c.Audience, nil
+func (c *JwtCustomClaims) GetAudience() []string {
+	return c.Audience
 }
 
 // GetIssuer implements the Claims interface.
-func (c *JwtCustomClaims) GetIssuer() (string, error) {
-	return c.Issuer, nil
+func (c *JwtCustomClaims) GetIssuer() string {
+	return c.Issuer
 }
 
 // GetSubject implements the Claims interface.
-func (c *JwtCustomClaims) GetSubject() (string, error) {
-	return c.Subject, nil
+func (c *JwtCustomClaims) GetSubject() string {
+	return c.Subject
 }
 
 // Type implements the Claims interface.

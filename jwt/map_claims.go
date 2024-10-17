@@ -12,32 +12,32 @@ import (
 type MapClaims map[string]interface{}
 
 // GetExpirationTime implements the Claims interface.
-func (m *MapClaims) GetExpirationTime() (*internal.NumericDate, error) {
-	return m.parseNumericDate("exp")
+func (m *MapClaims) GetExpirationTime() int64 {
+	return m.parseInt64("exp")
 }
 
 // GetNotBefore implements the Claims interface.
-func (m *MapClaims) GetNotBefore() (*internal.NumericDate, error) {
-	return m.parseNumericDate("nbf")
+func (m *MapClaims) GetNotBefore() int64 {
+	return m.parseInt64("nbf")
 }
 
 // GetIssuedAt implements the Claims interface.
-func (m *MapClaims) GetIssuedAt() (*internal.NumericDate, error) {
-	return m.parseNumericDate("iat")
+func (m *MapClaims) GetIssuedAt() int64 {
+	return m.parseInt64("iat")
 }
 
 // GetAudience implements the Claims interface.
-func (m *MapClaims) GetAudience() (internal.ClaimStrings, error) {
+func (m *MapClaims) GetAudience() []string {
 	return m.parseClaimsString("aud")
 }
 
 // GetIssuer implements the Claims interface.
-func (m *MapClaims) GetIssuer() (string, error) {
+func (m *MapClaims) GetIssuer() string {
 	return m.parseString("iss")
 }
 
 // GetSubject implements the Claims interface.
-func (m *MapClaims) GetSubject() (string, error) {
+func (m *MapClaims) GetSubject() string {
 	return m.parseString("sub")
 }
 
@@ -54,6 +54,28 @@ func (m *MapClaims) Marshal() ([]byte, error) {
 // Unmarshal implements the Claims interface.
 func (m *MapClaims) Unmarshal(data []byte) error {
 	return json.Unmarshal(data, m)
+}
+
+// parseInt64 tries to parse a key in the map claims type as a int64
+// Tis will succeed, if the underlying type is either a float64 or a json.Number.
+// Otherwise, 0 will be returned.
+func (m *MapClaims) parseInt64(key string) int64 {
+	v, ok := (*m)[key]
+	if !ok {
+		return 0
+	}
+
+	switch exp := v.(type) {
+	case float64:
+		return int64(exp)
+	case int64:
+		return exp
+	case json.Number:
+		v, _ := exp.Int64()
+		return v
+	}
+
+	return 0
 }
 
 // parseNumericDate tries to parse a key in the map claims type as a number
@@ -83,7 +105,7 @@ func (m *MapClaims) parseNumericDate(key string) (*internal.NumericDate, error) 
 
 // parseClaimsString tries to parse a key in the map claims type as a
 // [ClaimsStrings] type, which can either be a string or an array of string.
-func (m *MapClaims) parseClaimsString(key string) (internal.ClaimStrings, error) {
+func (m *MapClaims) parseClaimsString(key string) []string {
 	var cs []string
 	switch v := (*m)[key].(type) {
 	case string:
@@ -94,19 +116,19 @@ func (m *MapClaims) parseClaimsString(key string) (internal.ClaimStrings, error)
 		for _, a := range v {
 			vs, ok := a.(string)
 			if !ok {
-				return nil, internal.NewError(fmt.Sprintf("%s is invalid", key), internal.ErrInvalidType)
+				return nil
 			}
 			cs = append(cs, vs)
 		}
 	}
 
-	return cs, nil
+	return cs
 }
 
 // parseString tries to parse a key in the map claims type as a [string] type.
 // If the key does not exist, an empty string is returned. If the key has the
 // wrong type, an error is returned.
-func (m *MapClaims) parseString(key string) (string, error) {
+func (m *MapClaims) parseString(key string) string {
 	var (
 		ok  bool
 		raw interface{}
@@ -114,13 +136,13 @@ func (m *MapClaims) parseString(key string) (string, error) {
 	)
 	raw, ok = (*m)[key]
 	if !ok {
-		return "", nil
+		return ""
 	}
 
 	iss, ok = raw.(string)
 	if !ok {
-		return "", internal.NewError(fmt.Sprintf("%s is invalid", key), internal.ErrInvalidType)
+		return ""
 	}
 
-	return iss, nil
+	return iss
 }
