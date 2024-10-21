@@ -96,6 +96,7 @@ func encRun(cmd *cobra.Command, args []string) {
 			Age:  21,
 		}
 	}
+	c := &custom.CustomClaims{}
 
 	token := xwt.NewWithClaims(sMethod, claims)
 	str, err := token.SignedString(key)

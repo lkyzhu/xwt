@@ -17,6 +17,7 @@ import (
 //
 // See examples for how to use this with your own claim types.
 
+/*
 // GetExpirationTime implements the Claims interface.
 func (c *CustomClaims) GetExpirationTime() int64 {
 	return c.Claims.ExpiresAt
@@ -46,6 +47,7 @@ func (c *CustomClaims) GetIssuer() string {
 func (c *CustomClaims) GetSubject() string {
 	return c.Claims.Subject
 }
+*/
 
 // Type implements the Claims interface.
 func (c *CustomClaims) Type() string {
